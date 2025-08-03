@@ -72,7 +72,7 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public AddressDTO deleteAddress(Long addressId) {
         User user = authUtils.loggedInUser();
-        Address address = addressRepository.findAddressesByUserAndAddressId(user, addressId)
+        Address address = addressRepository.findAddressByUserAndAddressId(user, addressId)
                 .orElseThrow(() -> new ResourceNotFoundException("Address", "addressId", addressId));
 
         addressRepository.delete(address);

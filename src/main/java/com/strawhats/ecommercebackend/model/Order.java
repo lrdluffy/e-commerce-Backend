@@ -30,6 +30,10 @@ public class Order {
     private BigDecimal totalPrice;
     private LocalDateTime orderDate;
 
+    @ManyToOne
+    @JoinColumn(name = "address_id")
+    private Address address;
+
     @PrePersist
     public void prePersist() {
         this.orderDate = LocalDateTime.now();
