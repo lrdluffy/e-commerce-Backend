@@ -39,5 +39,5 @@ public class User {
     private List<Address> addresses = new ArrayList<>();
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private Cart cart;
+    private Cart cart   ;
 }
