@@ -20,10 +20,10 @@ import java.util.Date;
 @Component
 public class JwtUtils {
 
-    @Value("application.jwtSecret")
+    @Value("${application.jwtSecret}")
     private String jwtSecret;
 
-    @Value("application.jwtExpirationMs")
+    @Value("${application.jwtExpirationMs}")
     private Long jwtExpirationMs;
 
     public String getJwtTokenFromHeader(HttpServletRequest request) {

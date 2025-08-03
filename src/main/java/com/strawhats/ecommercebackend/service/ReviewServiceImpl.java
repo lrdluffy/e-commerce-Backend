@@ -59,7 +59,7 @@ public class ReviewServiceImpl implements ReivewService{
         Sort sort = sortDirection.equalsIgnoreCase("ASC") ? Sort.by(sortField).ascending() : Sort.by(sortField).descending();
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 
-        Page<Review> reviewPage = reviewRepository.findAllByProduct(product);
+        Page<Review> reviewPage = reviewRepository.findAllByProduct(product, pageable);
 
         List<ReviewDTO> content = reviewPage.getContent()
                 .stream()

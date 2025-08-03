@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Table(name = "orders")
 @Data
 @Builder
 @NoArgsConstructor
