@@ -1,5 +1,6 @@
 package com.strawhats.ecommercebackend.security.jwt;
 
+import com.strawhats.ecommercebackend.security.service.UserDetailsImpl;
 import com.strawhats.ecommercebackend.security.service.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -34,10 +35,10 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             if (jwtToken != null && jwtUtils.validateJwtToken(jwtToken)) {
                 String username = jwtUtils.getUsernameFromJwtToken(jwtToken);
 
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                UserDetailsImpl userDetails = (UserDetailsImpl) userDetailsService.loadUserByUsername(username);
 
                 UsernamePasswordAuthenticationToken authentication =  new UsernamePasswordAuthenticationToken(
-                        username, null, userDetails.getAuthorities()
+                        userDetails, null, userDetails.getAuthorities()
                 );
 
                 authentication.setDetails(new WebAuthenticationDetails(request));

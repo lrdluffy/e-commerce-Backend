@@ -66,7 +66,7 @@ public class WebSecurityConfig {
                 User admin = new User();
                 admin.setUsername("admin");
                 admin.setEmail("admin@gmail.com");
-                admin.setPassword("adminPassword");
+                admin.setPassword(passwordEncoder().encode("adminPassword"));
                 userRepository.save(admin);
             }
 
