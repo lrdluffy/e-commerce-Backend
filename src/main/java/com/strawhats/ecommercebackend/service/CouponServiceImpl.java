@@ -31,15 +31,15 @@ public class CouponServiceImpl implements CouponService {
     }
 
     @Override
-    public CouponDTO validateCoupon(CouponDTO couponDTO) {
-        Coupon coupon = couponRepository.findCouponByCode(couponDTO.getCode())
-                .orElseThrow(() -> new ResourceNotFoundException("Coupon", "code", couponDTO.getCode()));
+    public CouponDTO validateCoupon(String couponCode) {
+        Coupon coupon = couponRepository.findCouponByCode(couponCode)
+                .orElseThrow(() -> new ResourceNotFoundException("Coupon", "code", couponCode));
 
         if (coupon.getExpiryDate().isBefore(LocalDateTime.now())) {
             throw new ApiException("Coupon has expired!");
         }
 
-        CouponDTO validCouponDTO = modelMapper.map(couponDTO, CouponDTO.class);
+        CouponDTO validCouponDTO = modelMapper.map(couponCode, CouponDTO.class);
         return validCouponDTO;
     }
 }

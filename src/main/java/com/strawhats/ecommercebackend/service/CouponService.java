@@ -6,6 +6,6 @@ public interface CouponService {
 
     CouponDTO createCoupon(CouponDTO couponDTO);
 
-    CouponDTO validateCoupon(CouponDTO couponDTO);
+    CouponDTO validateCoupon(String couponCode);
 
 }

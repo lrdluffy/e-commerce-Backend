@@ -86,10 +86,11 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public PagedResponse<OrderDTO> getOrders(Integer pageNumber, Integer pageSize, String sortField, String sortDirection) {
+        User user =  authUtils.loggedInUser();
         Sort sort = sortDirection.equalsIgnoreCase("ASC") ? Sort.by(sortField).ascending() : Sort.by(sortField).descending();
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 
-        Page<Order> orderPage = orderRepository.findAll(pageable);
+        Page<Order> orderPage = orderRepository.findAllByUser(user, pageable);
 
         List<OrderDTO> content = orderPage.stream()
                 .map(order -> {
@@ -121,7 +122,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderDTO getOrderById(Long orderId) {
-        Order order = orderRepository.findOrderByOrderId(orderId)
+        User user =  authUtils.loggedInUser();
+        Order order = orderRepository.findOrderByOrderIdAndUser(orderId, user)
                 .orElseThrow(() -> new ResourceNotFoundException("Order", "orderId", orderId));
 
         List<OrderItemDTO> orderItemDTOS = order.getOrderItems()
