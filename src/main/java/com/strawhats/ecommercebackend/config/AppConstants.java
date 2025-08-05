@@ -8,4 +8,5 @@ public class AppConstants {
     public static final String CATEGORY_SORT_FIELD = "categoryId";
     public static final String PRODUCT_SORT_FIELD = "productId";
     public static final String ADDRESS_SORT_FIELD = "addressId";
+    public static final String REVIEW_SORT_FIELD = "reviewId";
 }

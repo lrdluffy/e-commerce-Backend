@@ -3,7 +3,7 @@ package com.strawhats.ecommercebackend.service;
 import com.strawhats.ecommercebackend.payload.PagedResponse;
 import com.strawhats.ecommercebackend.payload.ReviewDTO;
 
-public interface ReivewService {
+public interface ReviewService {
 
     ReviewDTO addReview(Long productId, ReviewDTO reviewDTO);
 

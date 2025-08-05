@@ -22,7 +22,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Service
-public class ReviewServiceImpl implements ReivewService{
+public class ReviewServiceImpl implements ReviewService {
 
     private final AuthUtils authUtils;
     private final ReviewRepository reviewRepository;
