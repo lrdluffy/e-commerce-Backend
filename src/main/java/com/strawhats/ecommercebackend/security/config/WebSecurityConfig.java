@@ -114,8 +114,7 @@ public class WebSecurityConfig {
                                 .requestMatchers("/api/tests/**").permitAll()
                                 .requestMatchers("/images/**").permitAll()
                                 .requestMatchers("/h2-console/**").permitAll()
-                                .anyRequest().permitAll()
-//                                .anyRequest().authenticated()
+                                .anyRequest().authenticated()
         ).sessionManagement(
                 httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 

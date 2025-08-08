@@ -1,5 +1,6 @@
 package com.strawhats.ecommercebackend.service;
 
+import com.strawhats.ecommercebackend.model.Cart;
 import com.strawhats.ecommercebackend.payload.CartDTO;
 import com.strawhats.ecommercebackend.payload.CartItemDTO;
 
@@ -14,4 +15,6 @@ public interface CartService {
     CartDTO clearCart(Long cartId);
 
     CartDTO updateCartItem(Long cartItemId, CartItemDTO cartItemDTO);
+
+    Cart deleteCart(Long cartId);
 }

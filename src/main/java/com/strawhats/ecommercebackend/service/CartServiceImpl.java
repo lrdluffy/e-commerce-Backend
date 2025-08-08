@@ -17,8 +17,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -136,6 +136,15 @@ public class CartServiceImpl implements CartService {
         Cart userCart = cartRepository.findCartByUserAndCartId(user, cartId)
                 .orElseThrow(() -> new ResourceNotFoundException("Cart", "userId", user.getUserId()));
 
+        cartItemRepository.deleteAll(userCart.getCartItems());
+
+        userCart.setTotalPrice(BigDecimal.ZERO);
+        Cart updatedCart = cartRepository.save(userCart);
+
+        CartDTO cartDTO = new CartDTO();
+        cartDTO.setItems(new ArrayList<>());
+        cartDTO.setTotalPrice(BigDecimal.ZERO);
+
         cartRepository.delete(userCart);
 
         List<CartItemDTO> cartItemDTOS = userCart.getCartItems()
@@ -151,7 +160,7 @@ public class CartServiceImpl implements CartService {
         deletedCartDTO.setItems(cartItemDTOS);
         deletedCartDTO.setTotalPrice(userCart.getTotalPrice());
 
-        return deletedCartDTO;
+        return cartDTO;
     }
 
     @Override
@@ -186,5 +195,16 @@ public class CartServiceImpl implements CartService {
         updatedCartDTO.setTotalPrice(updatedCart.getTotalPrice());
 
         return updatedCartDTO;
+    }
+
+    @Override
+    public Cart deleteCart(Long cartId) {
+        User user = authUtils.loggedInUser();
+        Cart userCart = cartRepository.findCartByUserAndCartId(user, cartId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cart", "userId", user.getUserId()));
+
+        cartRepository.delete(userCart);
+
+        return userCart;
     }
 }

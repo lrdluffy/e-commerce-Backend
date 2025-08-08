@@ -11,6 +11,7 @@ import com.strawhats.ecommercebackend.repository.OrderRepository;
 import com.strawhats.ecommercebackend.repository.ProductRepository;
 import com.strawhats.ecommercebackend.utils.AuthUtils;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +30,8 @@ public class OrderServiceImpl implements OrderService {
     private final AuthUtils authUtils;
     private final ProductRepository productRepository;
     private final OrderItemRepository orderItemRepository;
+    private final CartService cartService;
+    private final ModelMapper modelMapper;
 
     @Override
     public OrderDTO createOrder(OrderDTO orderDTO) {
@@ -36,37 +39,23 @@ public class OrderServiceImpl implements OrderService {
         Address address = addressRepository.findAddressByUserAndAddressId(user, orderDTO.getAddressId())
                 .orElseThrow(() -> new ResourceNotFoundException("Address", "addressId", orderDTO.getAddressId()));
 
-        BigDecimal totalPrice = BigDecimal.ZERO;
-
-        List<OrderItem> orderItems = orderDTO.getItems()
-                .stream()
-                .map(orderItemDTO -> {
-                    Product product = productRepository.findProductByProductId(orderItemDTO.getProductId())
-                            .orElseThrow(() -> new ResourceNotFoundException("Product", "productId", orderItemDTO.getProductId()));
-
-                    OrderItem orderItem = new OrderItem();
-                    orderItem.setPrice(product.getPrice());
-                    orderItem.setQuantity(orderItemDTO.getQuantity());
-                    product.setStock(product.getStock() - orderItemDTO.getQuantity());
-                    productRepository.save(product);
-                    orderItem.setProduct(product);
-
-                    totalPrice.add(product.getPrice().multiply(BigDecimal.valueOf(orderItemDTO.getQuantity())));
-
-                    return orderItem;
-                }).toList();
+        Cart userCart = cartService.deleteCart(user.getCart().getCartId());
 
         Order order = new Order();
         order.setUser(user);
         order.setAddress(address);
-        order.setOrderItems(orderItems);
-        order.setTotalPrice(totalPrice);
-        Order savedOrder = orderRepository.save(order);
+        order.setTotalPrice(userCart.getTotalPrice());
 
-        orderItems.forEach(orderItem -> {
-            orderItem.setOrder(savedOrder);
-            orderItemRepository.save(orderItem);
-        });
+        List<OrderItem> orderItems = userCart.getCartItems()
+                .stream()
+                .map(cartItem -> {
+                    OrderItem orderItem = modelMapper.map(cartItem, OrderItem.class);
+                    orderItem.setOrder(order);
+                    return orderItem;
+                }).toList();
+        order.setOrderItems(orderItems);
+
+        Order savedOrder = orderRepository.save(order);
 
         List<OrderItemDTO> orderItemDTOS = savedOrder.getOrderItems()
                 .stream()
@@ -86,7 +75,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public PagedResponse<OrderDTO> getOrders(Integer pageNumber, Integer pageSize, String sortField, String sortDirection) {
-        User user =  authUtils.loggedInUser();
+        User user = authUtils.loggedInUser();
         Sort sort = sortDirection.equalsIgnoreCase("ASC") ? Sort.by(sortField).ascending() : Sort.by(sortField).descending();
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 
@@ -122,7 +111,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderDTO getOrderById(Long orderId) {
-        User user =  authUtils.loggedInUser();
+        User user = authUtils.loggedInUser();
         Order order = orderRepository.findOrderByOrderIdAndUser(orderId, user)
                 .orElseThrow(() -> new ResourceNotFoundException("Order", "orderId", orderId));
 
